@@ -1,96 +1,200 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>NexoByte Solutions</title>
-  <style>
-    body {
-      font-family: Arial;
-      margin: 0;
-      background: #0a0f1c;
-      color: white;
-    }
-    header {
-      background: #111a2b;
-      padding: 20px;
-      text-align: center;
-    }
-    h1 {
-      margin: 0;
-      color: #00c3ff;
-    }
-    section {
-      padding: 30px;
-    }
-    .card {
-      background: #1b263b;
-      padding: 20px;
-      margin: 10px;
-      border-radius: 10px;
-    }
-    button {
-      background: #00c3ff;
-      border: none;
-      padding: 10px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>NexoByte Solutions</title>
+
+<style>
+body {font-family: Arial;margin:0;background:#0a0f1c;color:white;}
+.light {background:#f5f5f5;color:black;}
+
+#login {text-align:center;margin-top:100px;}
+input,select {padding:10px;margin:5px;}
+
+button {padding:10px;background:#00c3ff;border:none;cursor:pointer;}
+
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  background:#111;
+  padding:10px;
+}
+
+#dashboard {display:none;padding:20px;}
+
+.card {
+  background:#1b263b;
+  padding:15px;
+  margin:10px 0;
+  border-radius:10px;
+}
+
+.light .card {background:#ddd;}
+
+#chat {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#1b263b;
+  padding:10px;
+  width:300px;
+  border-radius:10px;
+}
+
+#messages {height:150px;overflow-y:auto;}
+
+#notif {
+  position:fixed;
+  top:20px;
+  right:20px;
+  background:green;
+  padding:10px;
+  display:none;
+}
+
+/* gráfico fake */
+.bar {
+  height:20px;
+  background:#00c3ff;
+  margin:5px 0;
+}
+</style>
 </head>
 
 <body>
 
-<header>
-  <h1>NexoByte Solutions</h1>
-  <p>Conectamos soluciones, resolvemos tu mundo digital</p>
-</header>
+<div id="login">
+<h2>NexoByte Login</h2>
+<input id="user" placeholder="Usuario">
+<input id="pass" type="password" placeholder="Contraseña">
+<br>
+<button onclick="login()">Ingresar</button>
+<p>Usuarios demo: admin / soporte</p>
+</div>
 
-<section>
-  <h2>Servicios de Soporte</h2>
+<div id="dashboard">
 
-  <div class="card">
-    <h3>Soporte Nivel 1</h3>
-    <p>Problemas básicos y asistencia inicial.</p>
-  </div>
+<div class="topbar">
+<span id="userName"></span>
+<div>
+<button onclick="toggle()">🌙☀️</button>
+<button onclick="wa()">WhatsApp</button>
+</div>
+</div>
 
-  <div class="card">
-    <h3>Soporte Nivel 2</h3>
-    <p>Diagnóstico técnico y problemas complejos.</p>
-  </div>
+<h2>Panel Empresa - NexoByte</h2>
 
-  <div class="card">
-    <h3>Soporte Nivel 3</h3>
-    <p>Servidores, seguridad y fallas críticas.</p>
-  </div>
+<div class="card">
+<h3>📊 Métricas</h3>
+<p>Tickets activos: <span id="tickets">0</span></p>
+<p>Resueltos: <span id="resueltos">0</span></p>
 
-</section>
+<div class="bar" id="bar1" style="width:10%"></div>
+<div class="bar" id="bar2" style="width:5%"></div>
+</div>
 
-<section>
-  <h2>Catálogo de Ayuda</h2>
+<div class="card">
+<h3>🎟️ Crear Ticket</h3>
+<input id="problema" placeholder="Problema">
+<select id="prioridad">
+<option>Baja</option>
+<option>Media</option>
+<option>Alta</option>
+</select>
+<button onclick="crearTicket()">Crear</button>
+</div>
 
-  <div class="card">
-    <h3>Problemas con Zoom</h3>
-    <p>Solución en 10-15 minutos.</p>
-  </div>
+<div class="card">
+<h3>📁 Historial</h3>
+<ul id="historial"></ul>
+</div>
 
-  <div class="card">
-    <h3>Fallas de Internet</h3>
-    <p>Diagnóstico y solución rápida.</p>
-  </div>
+</div>
 
-  <div class="card">
-    <h3>Error de Audio</h3>
-    <p>Configuración y reparación.</p>
-  </div>
+<div id="chat">
+<div id="messages"></div>
+<input id="msg">
+<button onclick="chat()">Enviar</button>
+</div>
 
-</section>
+<div id="notif">✔ Ticket creado</div>
 
-<section>
-  <h2>Contacto</h2>
-  <p>WhatsApp: +56 9 1234 5678</p>
-  <p>Email: soporte@nexobyte.cl</p>
-  <button>Solicitar ayuda</button>
-</section>
+<script>
+let tickets=0;
+let resueltos=0;
+
+function login(){
+  let u=document.getElementById("user").value;
+  if(u){
+    document.getElementById("login").style.display="none";
+    document.getElementById("dashboard").style.display="block";
+    document.getElementById("userName").innerText="👤 "+u;
+  }
+}
+
+function toggle(){
+  document.body.classList.toggle("light");
+}
+
+function wa(){
+  window.open("https://wa.me/56945239128");
+}
+
+function crearTicket(){
+  let p=document.getElementById("problema").value;
+  let pr=document.getElementById("prioridad").value;
+  if(p==="") return;
+
+  tickets++;
+  document.getElementById("tickets").innerText=tickets;
+
+  let li=document.createElement("li");
+  li.innerText=p+" ["+pr+"] (pendiente)";
+  document.getElementById("historial").appendChild(li);
+
+  actualizarGrafico();
+  notif();
+
+  setTimeout(()=>{
+    li.innerText=p+" ["+pr+"] (resuelto)";
+    resueltos++;
+    document.getElementById("resueltos").innerText=resueltos;
+    actualizarGrafico();
+  },3000);
+}
+
+function actualizarGrafico(){
+  document.getElementById("bar1").style.width=(tickets*10)+"%";
+  document.getElementById("bar2").style.width=(resueltos*10)+"%";
+}
+
+function notif(){
+  let n=document.getElementById("notif");
+  n.style.display="block";
+  setTimeout(()=>{n.style.display="none";},2000);
+}
+
+function chat(){
+  let input=document.getElementById("msg").value.toLowerCase();
+  let m=document.getElementById("messages");
+
+  m.innerHTML+="<p>👤: "+input+"</p>";
+
+  let r="No entendí tu problema.";
+
+  if(input.includes("hola")) r="Hola 👋 soporte NexoByte aquí.";
+  else if(input.includes("zoom")) r="Revisa cámara, permisos o usa celular.";
+  else if(input.includes("internet")) r="Reinicia router.";
+  else if(input.includes("audio")) r="Configura sonido.";
+  else if(input.includes("precio")) r="Nivel1 10k / Nivel2 20k / Nivel3 30k";
+  else if(input.includes("ticket")) r="Puedes crear un ticket en el panel.";
+  else if(input.includes("ayuda")) r="Describe tu problema o crea un ticket.";
+
+  setTimeout(()=>{m.innerHTML+="<p>🤖: "+r+"</p>";},500);
+
+  document.getElementById("msg").value="";
+}
+</script>
 
 </body>
 </html>
